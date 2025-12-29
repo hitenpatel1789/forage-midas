@@ -23,6 +23,9 @@ public class TaskThreeTests {
     @Autowired
     private FileLoader fileLoader;
 
+    @Autowired
+    private com.jpmc.midascore.repository.UserRepository userRepository;
+
     @Test
     void task_three_verifier() throws InterruptedException {
         userPopulator.populate();
@@ -30,13 +33,21 @@ public class TaskThreeTests {
         for (String transactionLine : transactionLines) {
             kafkaProducer.send(transactionLine);
         }
-        Thread.sleep(2000);
+        Thread.sleep(10000);
 
 
         logger.info("----------------------------------------------------------");
         logger.info("----------------------------------------------------------");
         logger.info("----------------------------------------------------------");
         logger.info("use your debugger to find out what waldorf's balance is after all transactions are processed");
+        
+        Iterable<com.jpmc.midascore.entity.UserRecord> users = userRepository.findAll();
+        for (com.jpmc.midascore.entity.UserRecord user : users) {
+            if (user.getName().equals("waldorf")) {
+                logger.info("Waldorf's balance: {}", user.getBalance());
+            }
+        }
+        
         logger.info("kill this test once you find the answer");
         while (true) {
             Thread.sleep(20000);
